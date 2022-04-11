@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.1.0"
+      version = "2.99.0"
     }
   }
 }
@@ -42,4 +42,28 @@ resource "azurerm_mssql_firewall_rule" "db" {
   server_id        = azurerm_mssql_server.db.id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
+}
+
+resource "azurerm_app_service_plan" "app" {
+  name                = "adv001plan"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  sku {
+    tier = "Free"
+    size = "F1"
+  }
+}
+
+resource "azurerm_app_service" "app" {
+  name                = "adv001service"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  app_service_plan_id = azurerm_app_service_plan.app.id
+
+  connection_string {
+    name  = "DefaultConnection"
+    type  = "SQLAzure"
+    value = "Server=tcp:adv001server.database.windows.net,1433;Initial Catalog=advdb;Persist Security Info=False;User ID=app-user;Password=SuperSecret!@#;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  }
 }
