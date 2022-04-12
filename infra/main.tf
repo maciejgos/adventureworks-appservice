@@ -14,20 +14,30 @@ provider "azurerm" {
   }
 }
 
+resource "random_password" "pwd" {
+  length = 12
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "rg-adv-samples"
   location = "westeurope"
 }
 
 resource "azurerm_mssql_server" "db" {
+  lifecycle {
+    ignore_changes = [
+      azuread_administrator
+    ]
+  }
   resource_group_name           = azurerm_resource_group.rg.name
   location                      = azurerm_resource_group.rg.location
   name                          = "adv001server"
   administrator_login           = "sqldbadmin"
-  administrator_login_password  = "P@ssw0rd!@#"
+  administrator_login_password  = random_password.pwd.result
   public_network_access_enabled = true
   version                       = "12.0"
   minimum_tls_version           = "1.2"
+
 }
 
 resource "azurerm_mssql_database" "db" {
@@ -65,9 +75,13 @@ resource "azurerm_app_service" "app" {
     dotnet_framework_version = "v6.0"
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   connection_string {
     name  = "DefaultConnection"
     type  = "SQLAzure"
-    value = "Server=tcp:adv001server.database.windows.net,1433;Initial Catalog=advdb;Persist Security Info=False;User ID=app-user;Password=SuperSecret!@#;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+    value = "Server=tcp:adv001server.database.windows.net,1433;Initial Catalog=advdb;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   }
 }
