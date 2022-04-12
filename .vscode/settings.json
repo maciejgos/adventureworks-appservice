@@ -1,4 +1,4 @@
 {
-    "appService.defaultWebAppToDeploy": "/subscriptions/7d4d4403-2495-409c-9407-2295dff5053f/resourceGroups/rg-azuresql-demo/providers/Microsoft.Web/sites/adv001appservice",
+    "appService.defaultWebAppToDeploy": "/subscriptions/7d4d4403-2495-409c-9407-2295dff5053f/resourceGroups/rg-adv-samples/providers/Microsoft.Web/sites/adv001service",
     "appService.deploySubpath": "publish"
 }
