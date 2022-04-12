@@ -22,6 +22,7 @@ export class ProductsComponent implements OnInit {
 
 interface SalesOrderHeader {
   salesOrderNumber: string;
+  accountNumber: string;
   orderDate: string;
   subTotal: number;
   totalDue: number;

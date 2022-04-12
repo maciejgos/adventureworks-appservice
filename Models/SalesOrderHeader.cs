@@ -21,6 +21,7 @@ namespace AdventureWorksDemo.Models
         public int? ShipToAddressId { get; set; }
         public int? BillToAddressId { get; set; }
         public string ShipMethod { get; set; } = null!;
+        public string AccountNumber { get; set; }
         public string? CreditCardApprovalCode { get; set; }
         public decimal SubTotal { get; set; }
         public decimal TaxAmt { get; set; }

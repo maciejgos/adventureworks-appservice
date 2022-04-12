@@ -6,6 +6,7 @@
     <thead>
         <tr>
             <th>Number</th>
+            <th>Account</th>
             <th>Date</th>
             <th>Sub Total</th>
             <th>Total Due</th>
@@ -14,6 +15,7 @@
     <tbody>
         <tr *ngFor="let order of salesOrders">
             <td>{{ order.salesOrderNumber }}</td>
+            <td>{{ order.accountNumber }}</td>
             <td>{{ order.orderDate }}</td>
             <td>{{ order.subTotal }}</td>
             <td>{{ order.totalDue }}</td>
