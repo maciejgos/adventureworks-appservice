@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "2.99.0"
+      version = "3.1.0"
     }
   }
 }
@@ -12,6 +12,8 @@ provider "azurerm" {
   features {
 
   }
+
+  subscription_id = "7d4d4403-2495-409c-9407-2295dff5053f"
 }
 
 resource "random_password" "pwd" {
@@ -24,6 +26,9 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_mssql_server" "db" {
+  #checkov:skip=CKV_AZURE_113: This is only development environment
+  #checkov:skip=CKV_AZURE_23: Auditing is not required for this env
+  #checkov:skip=CKV_AZURE_24: Auditing is not required for this env
   lifecycle {
     ignore_changes = [
       azuread_administrator
@@ -54,25 +59,24 @@ resource "azurerm_mssql_firewall_rule" "db" {
   end_ip_address   = "0.0.0.0"
 }
 
-resource "azurerm_app_service_plan" "app" {
+resource "azurerm_service_plan" "app" {
   name                = "adv001plan"
-  location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-
-  sku {
-    tier = "Free"
-    size = "F1"
-  }
+  location            = azurerm_resource_group.rg.location
+  os_type             = "Linux"
+  sku_name            = "B1"
 }
 
-resource "azurerm_app_service" "app" {
+resource "azurerm_linux_web_app" "app" {
   name                = "adv001service"
-  location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  app_service_plan_id = azurerm_app_service_plan.app.id
+  location            = azurerm_resource_group.rg.location
+  service_plan_id     = azurerm_service_plan.app.id
 
   site_config {
-    dotnet_framework_version = "v6.0"
+    application_stack {
+      dotnet_version = "6.0"
+    }
   }
 
   identity {
