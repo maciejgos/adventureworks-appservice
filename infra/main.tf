@@ -12,8 +12,6 @@ provider "azurerm" {
   features {
 
   }
-
-  subscription_id = "7d4d4403-2495-409c-9407-2295dff5053f"
 }
 
 resource "random_password" "pwd" {
