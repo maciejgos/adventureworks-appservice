@@ -92,3 +92,22 @@ resource "azurerm_linux_web_app" "app" {
     value = "Server=tcp:adv001server.database.windows.net,1433;Initial Catalog=advdb;User ID=${local.dbadmin}; Password=${local.dbpassword}; Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   }
 }
+
+resource "azurerm_cdn_profile" "cdn" {
+  name                = "adv001cdnprofile"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "Standard_Microsoft"
+}
+
+resource "azurerm_cdn_endpoint" "cdn" {
+  name                = "adv-portal"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  profile_name        = azurerm_cdn_profile.cdn.name
+  origin {
+    name      = "adv-portal"
+    host_name = azurerm_linux_web_app.app.default_hostname
+  }
+
+}
