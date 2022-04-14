@@ -18,6 +18,11 @@ resource "random_password" "pwd" {
   length = 12
 }
 
+locals {
+  dbadmin    = "sqldbadmin"
+  dbpassword = random_password.pwd.result
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "rg-adv-samples"
   location = "westeurope"
@@ -35,8 +40,8 @@ resource "azurerm_mssql_server" "db" {
   resource_group_name           = azurerm_resource_group.rg.name
   location                      = azurerm_resource_group.rg.location
   name                          = "adv001server"
-  administrator_login           = "sqldbadmin"
-  administrator_login_password  = random_password.pwd.result
+  administrator_login           = local.dbadmin
+  administrator_login_password  = local.dbpassword
   public_network_access_enabled = true
   version                       = "12.0"
   minimum_tls_version           = "1.2"
@@ -84,6 +89,6 @@ resource "azurerm_linux_web_app" "app" {
   connection_string {
     name  = "DefaultConnection"
     type  = "SQLAzure"
-    value = "Server=tcp:adv001server.database.windows.net,1433;Initial Catalog=advdb;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+    value = "Server=tcp:adv001server.database.windows.net,1433;Initial Catalog=advdb;User ID=${local.dbadmin}; Password=${local.dbpassword}; Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   }
 }
