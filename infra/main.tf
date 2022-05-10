@@ -75,6 +75,7 @@ resource "azurerm_linux_web_app" "app" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   service_plan_id     = azurerm_service_plan.app.id
+  https_only          = true
 
   site_config {
     application_stack {
@@ -105,9 +106,11 @@ resource "azurerm_cdn_endpoint" "cdn" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   profile_name        = azurerm_cdn_profile.cdn.name
+  origin_host_header  = azurerm_linux_web_app.app.default_hostname
+  is_http_allowed     = false
+  is_https_allowed    = true
   origin {
-    name      = "adv-portal"
+    name      = replace(azurerm_linux_web_app.app.default_hostname, ".", "-")
     host_name = azurerm_linux_web_app.app.default_hostname
   }
-
 }
